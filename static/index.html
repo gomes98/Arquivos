@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload</title>
+</head>
+
+<body>
+    <form ref='uploadForm' id='uploadForm' action='http://localhost:8000/api/file' method='post'
+        encType="multipart/form-data">
+        <input type="file" name="file" />
+        <input type='submit' value='Upload!' />
+    </form>
+</body>
+<script>
+    // Este é um elemento que ficará visível apenas quando o usuário estiver 
+    // levando algum elemento para sua droppable zone 
+    const droppableZoneSign = document.getElementById('droppable-zone-sign')
+    document.addEventListener('dragenter', event => { droppableZoneSign.classList.add('droppable') })
+    document.addEventListener('dragleave', event => { droppableZoneSign.classList.remove('droppable') })
+    document.addEventListener('dragover', event => {
+        event.stopPropagation(); event.preventDefault();
+        droppableZoneSign.classList.add('droppable')
+        // isso adiciona o sinal de mais (+) ao lado do cursor para indicar ao usuário     
+        // que uma ação diferente será tomada     
+        event.dataTransfer.dropEffect = 'copy';
+    })
+    document.addEventListener('drop', event => {
+        event.preventDefault();
+        outputEl.classList.remove('droppable')
+        event.stopPropagation(); 
+        // trata o filesList     
+        appendFiles(event.dataTransfer.files)
+    })
+</script>
+
+</html>

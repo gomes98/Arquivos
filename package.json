@@ -1,0 +1,15 @@
+{
+  "name": "arquivos",
+  "version": "1.0.0",
+  "description": "sistema de uploads de arquivos em node",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mauricio Gomes",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.1"
+  }
+}
