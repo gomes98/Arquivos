@@ -42,7 +42,10 @@ exports.delete = async (req, res, next) => {
     })
 };
 
-exports.get = async (req, res, next) => {
+exports.get = async (req, res, next)  => {
+    console.log(req.app.minhaVariavel)
+    console.log(req.app.wbsktSend)
+    req.app.wbsktSend('teste')
     let arquivos = await listarArquivosDoDiretorio(`./files`); // coloque o caminho do seu diretorio
     res.send(arquivos)
 };

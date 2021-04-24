@@ -6,6 +6,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        .chat {
+            display: flex;
+            flex-direction: column;
+            margin: 10px;
+        }
+    </style>
 </head>
 
 <body>
@@ -14,8 +22,60 @@
         <input type="file" name="file" />
         <input type='submit' value='Upload!' />
     </form>
+    <div class="chat">
+        <textarea name="response" id="response" cols="30" rows="10"></textarea>
+        <input type="text" id="message">
+        <button id="enviar">Enviar</button>
+    </div>
+    <button id="btn">WBKT</button>
 </body>
 <script>
+    let socket;
+
+    window.onload = () => {
+        socket = new io('http://192.168.88.100:8000')
+        socket.on('received', (message) => {
+            let rec = document.getElementById('response')
+            rec.value = `${rec.value} ${message} \n`
+            rec.scrollTop = rec.scrollHeight
+            console.log(message);
+        })
+        socket.on('avalilable', (message) => {
+            console.log(message);
+        })
+    }
+
+    document.getElementById('btn').addEventListener('click', function () {
+        if (socket) {
+            console.log('enviou');
+            socket.emit('message', `aham ${Math.random()}`)
+        }
+    })
+
+    document.getElementById('enviar').addEventListener('click', function () {
+       send();
+    })
+
+    function send(){
+        if (socket) {
+            let text = document.getElementById('message')
+            if (text.value.length) {
+                socket.emit('message', `${text.value}`)
+                text.value = ''
+            }
+        }
+    }
+
+    document.getElementById('message').addEventListener("keyup", function (event) {
+        // Number 13 is the "Enter" key on the keyboard
+        if (event.keyCode === 13) {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            // Trigger the button element with a click
+            send();
+        }
+    })
+
     // Este é um elemento que ficará visível apenas quando o usuário estiver 
     // levando algum elemento para sua droppable zone 
     const droppableZoneSign = document.getElementById('droppable-zone-sign')
@@ -31,7 +91,7 @@
     document.addEventListener('drop', event => {
         event.preventDefault();
         outputEl.classList.remove('droppable')
-        event.stopPropagation(); 
+        event.stopPropagation();
         // trata o filesList     
         appendFiles(event.dataTransfer.files)
     })

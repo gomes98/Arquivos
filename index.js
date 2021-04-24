@@ -1,8 +1,19 @@
 const express = require('express');
 const fileUpload = require('express-fileupload');
-const app = express();
+const socketio = require('socket.io')
+const http = require('http')
+const cors = require('cors');
 
-app.expressModule = express
+const app = express();
+app.use(cors());
+const httpServer = http.createServer(app);
+const skt = new socketio.Server(httpServer)
+app.wbskt = skt
+
+require('./src/websocket/index').wbs(app)
+// const { sendAll } = 
+app.wbsktSend = require('./src/websocket/index').sendAll
+app.minhaVariavel = "kkkkk"
 
 app.use(express.urlencoded({extended : true}));
 // default options
@@ -12,5 +23,5 @@ app.use(express.static('static'));
 //rotas da aplicação
 require('./src/Routes/index')(app);
 //porta
-app.listen(8000);
+httpServer.listen(8000)
 
