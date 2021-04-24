@@ -1,4 +1,5 @@
 const fs = require('fs').promises;
+const fs1 = require('fs');
 
 exports.post = async (req, res, next) => {
     let sampleFile;
@@ -16,15 +17,17 @@ exports.post = async (req, res, next) => {
     sampleFile.mv(uploadPath, function (err) {
         if (err)
             return res.status(500).send(err);
+        req.app.wbsktSend(JSON.stringify({ op: "add", file: sampleFile.name }))
         res.status(204).send()
     });
 };
 
 exports.put = async (req, res, next) => {
-    if(!req.body.fileName || !req.body.newFileName){
+    if (!req.body.fileName || !req.body.newFileName) {
         return res.status(400).send()
     }
     fs.rename(`./files/${req.body.fileName}`, `./files/${req.body.newFileName}`).then(_ => {
+        req.app.wbsktSend(JSON.stringify({ op: "rename", fileName: req.body.fileName, newFileName: req.body.newFileName }))
         res.status(204).send()
     }).catch(err => {
         res.status(404).send({ error: err.code })
@@ -36,16 +39,14 @@ exports.delete = async (req, res, next) => {
         return res.status(400).send({ error: "No file" })
     }
     fs.unlink(`./files/${req.body.fileName}`).then(_ => {
+        req.app.wbsktSend(JSON.stringify({ op: "delete", file: req.body.fileName }))
         res.status(204).send()
     }).catch(err => {
         res.status(404).send({ error: err.code })
     })
 };
 
-exports.get = async (req, res, next)  => {
-    console.log(req.app.minhaVariavel)
-    console.log(req.app.wbsktSend)
-    req.app.wbsktSend('teste')
+exports.get = async (req, res, next) => {
     let arquivos = await listarArquivosDoDiretorio(`./files`); // coloque o caminho do seu diretorio
     res.send(arquivos)
 };
@@ -59,7 +60,13 @@ async function listarArquivosDoDiretorio(diretorio) {
         if (stat.isDirectory())
             await listarArquivosDoDiretorio(diretorio + '/' + listaDeArquivos[k], arquivos);
         else
-            arquivos.push(listaDeArquivos[k]);
+            arquivos.push({fileName : listaDeArquivos[k], info: await getFilesizeInBytes(diretorio + '/' + listaDeArquivos[k])});
     }
     return arquivos;
+}
+
+async function getFilesizeInBytes(filename) {
+    var stats = await fs1.statSync(filename);
+    var fileSizeInBytes = stats.size;
+    return {size: fileSizeInBytes, ctime: stats.ctime, mtime: stats.mtime, atime: stats.atime};
 }

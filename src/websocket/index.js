@@ -52,7 +52,6 @@ exports.wbs = app =>{
     })
 }
 
-
 exports.sendAll = (mensagem) =>{
     conexoes.forEach(ele =>{
         console.log(ele.id);
