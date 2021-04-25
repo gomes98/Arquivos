@@ -27,7 +27,7 @@
 // }
 var conexoes = [];
 exports.wbs = app =>{
-
+    
     app.wbskt.on('connection', (socket) => {
         conexoes.push(socket)
         console.log(socket.client.conn.remoteAddress);
@@ -55,6 +55,6 @@ exports.wbs = app =>{
 exports.sendAll = (mensagem) =>{
     conexoes.forEach(ele =>{
         console.log(ele.id);
-        ele.emit('received', `${mensagem}`)
+        ele.emit('fileChange', mensagem)
     })        
 }

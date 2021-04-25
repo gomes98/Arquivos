@@ -6,20 +6,22 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors());
+
 const httpServer = http.createServer(app);
-const skt = new socketio.Server(httpServer)
+const skt = new socketio.Server(httpServer, { cors: { origin: '*' } })
+
 app.wbskt = skt
 
 require('./src/websocket/index').wbs(app)
-// const { sendAll } = 
+//inserindo a função envia para todos no app
 app.wbsktSend = require('./src/websocket/index').sendAll
-app.minhaVariavel = "kkkkk"
 
 app.use(express.urlencoded({extended : true}));
 // default options
 app.use(fileUpload());
 //servindo as paginas
 app.use(express.static('static'));
+app.use('/download/',express.static('./files'));
 //rotas da aplicação
 require('./src/Routes/index')(app);
 //porta

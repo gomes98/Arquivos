@@ -17,7 +17,7 @@ exports.post = async (req, res, next) => {
     sampleFile.mv(uploadPath, function (err) {
         if (err)
             return res.status(500).send(err);
-        req.app.wbsktSend(JSON.stringify({ op: "add", file: sampleFile.name }))
+        req.app.wbsktSend({ op: "add", file: sampleFile.name })
         res.status(204).send()
     });
 };
@@ -27,7 +27,7 @@ exports.put = async (req, res, next) => {
         return res.status(400).send()
     }
     fs.rename(`./files/${req.body.fileName}`, `./files/${req.body.newFileName}`).then(_ => {
-        req.app.wbsktSend(JSON.stringify({ op: "rename", fileName: req.body.fileName, newFileName: req.body.newFileName }))
+        req.app.wbsktSend({ op: "rename", fileName: req.body.fileName, newFileName: req.body.newFileName })
         res.status(204).send()
     }).catch(err => {
         res.status(404).send({ error: err.code })
@@ -39,7 +39,7 @@ exports.delete = async (req, res, next) => {
         return res.status(400).send({ error: "No file" })
     }
     fs.unlink(`./files/${req.body.fileName}`).then(_ => {
-        req.app.wbsktSend(JSON.stringify({ op: "delete", file: req.body.fileName }))
+        req.app.wbsktSend({ op: "delete", file: req.body.fileName })
         res.status(204).send()
     }).catch(err => {
         res.status(404).send({ error: err.code })
@@ -68,5 +68,5 @@ async function listarArquivosDoDiretorio(diretorio) {
 async function getFilesizeInBytes(filename) {
     var stats = await fs1.statSync(filename);
     var fileSizeInBytes = stats.size;
-    return {size: fileSizeInBytes, ctime: stats.ctime, mtime: stats.mtime, atime: stats.atime};
+    return {size: fileSizeInBytes, mtime: stats.mtime};
 }
