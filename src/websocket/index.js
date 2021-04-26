@@ -26,8 +26,8 @@
 
 // }
 var conexoes = [];
-exports.wbs = app =>{
-    
+exports.wbs = app => {
+
     app.wbskt.on('connection', (socket) => {
         conexoes.push(socket)
         console.log(socket.client.conn.remoteAddress);
@@ -36,25 +36,24 @@ exports.wbs = app =>{
 
         //quando receber a mensagem do socket
         socket.on('message', message => {
-            console.log(message);
-            socket.emit('received', `EU: ${message}`)
-            conexoes.forEach(ele =>{
-                socket.to(ele.id).emit('received', `${socket.conn.remoteAddress} - ${message}`)
+                console.log(message);
+                socket.emit('received', `EU: ${message}`)
+                conexoes.forEach(ele => {
+                    socket.to(ele.id).emit('received', `${socket.conn.remoteAddress} - ${message}`)
+                })
             })
-        })
-        //quando o socket desconectar
+            //quando o socket desconectar
         socket.on('disconnect', _ => {
-            let index = conexoes.findIndex((ele) =>{
-                return ele.id == socket.id 
+            let index = conexoes.findIndex((ele) => {
+                return ele.id == socket.id
             })
-            conexoes = conexoes.slice(index,1)
+            conexoes = conexoes.slice(index, 1)
         })
     })
 }
 
-exports.sendAll = (mensagem) =>{
-    conexoes.forEach(ele =>{
-        console.log(ele.id);
+exports.sendAll = (mensagem) => {
+    conexoes.forEach(ele => {
         ele.emit('fileChange', mensagem)
-    })        
+    })
 }
