@@ -13,17 +13,16 @@ const skt = new socketio.Server(httpServer, { cors: { origin: '*' } })
 app.wbskt = skt
 
 require('./src/websocket/index').wbs(app)
-//inserindo a função envia para todos no app
+    //inserindo a função envia para todos no app
 app.wbsktSend = require('./src/websocket/index').sendAll
 
-app.use(express.urlencoded({extended : true}));
+app.use(express.urlencoded({ extended: true }));
 // default options
 app.use(fileUpload());
 //servindo as paginas
 app.use(express.static('static'));
-app.use('/download/',express.static('./files'));
+app.use('/api/download/', express.static('./files'));
 //rotas da aplicação
 require('./src/Routes/index')(app);
 //porta
 httpServer.listen(8000)
-
