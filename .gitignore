@@ -5,6 +5,7 @@ node_modules
 /uploads
 /public
 /files
+/static
 .env
 # local env files
 .env.local

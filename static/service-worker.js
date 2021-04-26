@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.018e7afa33d8c1fd898a8111c3276fde.js"
+  "/precache-manifest.f45596a86f497849406a9e8368afe626.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "arquivosfront"});

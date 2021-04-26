@@ -30,16 +30,12 @@ exports.wbs = app => {
 
     app.wbskt.on('connection', (socket) => {
         conexoes.push(socket)
-        console.log(socket.client.conn.remoteAddress);
-        // socket.emit('avalilable', JSON.stringify(cons))
-        console.log(`Nova Conexao WBSKT ${socket.id}`);
-
-        //quando receber a mensagem do socket
-        socket.on('message', message => {
+            //quando receber a mensagem do socket
+        socket.on('chatSend', message => {
                 console.log(message);
-                socket.emit('received', `EU: ${message}`)
+                socket.emit('chatReceive', `EU: ${message}`)
                 conexoes.forEach(ele => {
-                    socket.to(ele.id).emit('received', `${socket.conn.remoteAddress} - ${message}`)
+                    socket.to(ele.id).emit('chatReceive', `${socket.conn.remoteAddress} - ${message}`)
                 })
             })
             //quando o socket desconectar
