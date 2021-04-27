@@ -22,6 +22,18 @@ exports.post = async (req, res, next) => {
     });
 };
 
+exports.create = async (req, res, next) => {
+    if (!req.body.fileContent || !req.body.fileName) {
+        return res.status(400).send()
+    }
+    console.log(req.body.fileContent, req.body.fileName);
+    fs1.writeFile(`./files/${req.body.fileName}`, req.body.fileContent, function (err) {
+        if (err) throw err;
+        req.app.wbsktSend({ op: "created", file: req.body.fileName })
+        return res.status(204).send()
+    });
+};
+
 exports.put = async (req, res, next) => {
     if (!req.body.fileName || !req.body.newFileName) {
         return res.status(400).send()
@@ -51,16 +63,22 @@ exports.get = async (req, res, next) => {
     res.send(arquivos)
 };
 
-async function listarArquivosDoDiretorio(diretorio) {
-    let arquivos = [];
+async function listarArquivosDoDiretorio(diretorio, arquivos) {
+    if (!arquivos)
+        arquivos = [];
 
     let listaDeArquivos = await fs.readdir(diretorio);
     for (let k in listaDeArquivos) {
         let stat = await fs.stat(diretorio + '/' + listaDeArquivos[k]);
-        if (stat.isDirectory())
+        if (stat.isDirectory()) {
+
+            arquivos.push({ fileName: diretorio + '/' + listaDeArquivos[k], dir: true, info: await getFilesizeInBytes(diretorio + '/' + listaDeArquivos[k]) });
             await listarArquivosDoDiretorio(diretorio + '/' + listaDeArquivos[k], arquivos);
-        else
-            arquivos.push({fileName : listaDeArquivos[k], info: await getFilesizeInBytes(diretorio + '/' + listaDeArquivos[k])});
+        }
+        else {
+
+            arquivos.push({ fileName: diretorio + '/' + listaDeArquivos[k], dir: false, info: await getFilesizeInBytes(diretorio + '/' + listaDeArquivos[k]) });
+        }
     }
     return arquivos;
 }
@@ -68,5 +86,5 @@ async function listarArquivosDoDiretorio(diretorio) {
 async function getFilesizeInBytes(filename) {
     var stats = await fs1.statSync(filename);
     var fileSizeInBytes = stats.size;
-    return {size: fileSizeInBytes, mtime: stats.mtime};
+    return { size: fileSizeInBytes, mtime: stats.mtime };
 }
