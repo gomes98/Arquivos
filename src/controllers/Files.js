@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
 const fs1 = require('fs');
+const dirTree = require('../utils/directory-tree');
 
 exports.post = async (req, res, next) => {
     let sampleFile;
@@ -59,8 +60,17 @@ exports.delete = async (req, res, next) => {
 };
 
 exports.get = async (req, res, next) => {
-    let arquivos = await listarArquivosDoDiretorio(`./files`); // coloque o caminho do seu diretorio
-    res.send(arquivos)
+    let directory = req.query.directory ? req.query.directory : ''
+    await listarArquivosDoDiretorio(`./files${directory}`).then(ret => {
+        res.send(ret)
+
+    }).catch(err => {
+        res.status(404).send({ error: err.code })
+    });
+};
+exports.getTree = async (req, res, next) => {
+    let arquivos = dirTree("./files", { attributes: ['mode', 'mtime'] });
+    res.send([arquivos])
 };
 
 async function listarArquivosDoDiretorio(diretorio, arquivos) {
@@ -71,12 +81,10 @@ async function listarArquivosDoDiretorio(diretorio, arquivos) {
     for (let k in listaDeArquivos) {
         let stat = await fs.stat(diretorio + '/' + listaDeArquivos[k]);
         if (stat.isDirectory()) {
-
             arquivos.push({ fileName: diretorio + '/' + listaDeArquivos[k], dir: true, info: await getFilesizeInBytes(diretorio + '/' + listaDeArquivos[k]) });
             await listarArquivosDoDiretorio(diretorio + '/' + listaDeArquivos[k], arquivos);
         }
         else {
-
             arquivos.push({ fileName: diretorio + '/' + listaDeArquivos[k], dir: false, info: await getFilesizeInBytes(diretorio + '/' + listaDeArquivos[k]) });
         }
     }

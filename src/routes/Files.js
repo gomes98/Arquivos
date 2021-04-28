@@ -6,4 +6,5 @@ module.exports = (app) => {
     app.put('/api/file/',  FilesController.put);
     app.delete('/api/file/',  FilesController.delete);
     app.get('/api/file',  FilesController.get);
+    app.get('/api/file/tree',  FilesController.getTree);
 }

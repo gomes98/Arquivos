@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
+    "directory-tree": "^2.2.9",
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
     "socket.io": "^4.0.1"
