@@ -3,6 +3,7 @@ const fs1 = require('fs');
 const dirTree = require('../utils/directory-tree');
 
 exports.post = async (req, res, next) => {
+    let dir = req.query.directory ? `${req.query.directory}/` : '' 
     let sampleFile;
     let uploadPath;
 
@@ -12,7 +13,8 @@ exports.post = async (req, res, next) => {
 
     // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
     sampleFile = req.files.file;
-    uploadPath = './files/' + sampleFile.name;
+    uploadPath = `./files/${dir}${ sampleFile.name}`
+    // uploadPath = './files/' + sampleFile.name;
 
     // Use the mv() method to place the file somewhere on your server
     sampleFile.mv(uploadPath, function (err) {
@@ -24,11 +26,11 @@ exports.post = async (req, res, next) => {
 };
 
 exports.create = async (req, res, next) => {
+    let dir = req.query.directory ? `${req.query.directory}/` : '' 
     if (!req.body.fileContent || !req.body.fileName) {
         return res.status(400).send()
     }
-    console.log(req.body.fileContent, req.body.fileName);
-    fs1.writeFile(`./files/${req.body.fileName}`, req.body.fileContent, function (err) {
+    fs1.writeFile(`./files/${dir}${req.body.fileName}`, req.body.fileContent, function (err) {
         if (err) throw err;
         req.app.wbsktSend({ op: "created", file: req.body.fileName })
         return res.status(204).send()
@@ -36,10 +38,11 @@ exports.create = async (req, res, next) => {
 };
 
 exports.put = async (req, res, next) => {
+    let dir = req.query.directory ? `${req.query.directory}/` : '' 
     if (!req.body.fileName || !req.body.newFileName) {
         return res.status(400).send()
     }
-    fs.rename(`./files/${req.body.fileName}`, `./files/${req.body.newFileName}`).then(_ => {
+    fs.rename(`./files/${dir}${req.body.fileName}`, `./files/${dir}${req.body.newFileName}`).then(_ => {
         req.app.wbsktSend({ op: "rename", fileName: req.body.fileName, newFileName: req.body.newFileName })
         res.status(204).send()
     }).catch(err => {
@@ -48,10 +51,11 @@ exports.put = async (req, res, next) => {
 };
 
 exports.delete = async (req, res, next) => {
+    let dir = req.query.directory ? `${req.query.directory}/` : '' 
     if (!req.body.fileName) {
         return res.status(400).send({ error: "No file" })
     }
-    fs.unlink(`./files/${req.body.fileName}`).then(_ => {
+    fs.unlink(`./files/${dir}${req.body.fileName}`).then(_ => {
         req.app.wbsktSend({ op: "delete", file: req.body.fileName })
         res.status(204).send()
     }).catch(err => {
@@ -82,7 +86,7 @@ async function listarArquivosDoDiretorio(diretorio, arquivos) {
         let stat = await fs.stat(diretorio + '/' + listaDeArquivos[k]);
         if (stat.isDirectory()) {
             arquivos.push({ fileName: diretorio + '/' + listaDeArquivos[k], dir: true, info: await getFilesizeInBytes(diretorio + '/' + listaDeArquivos[k]) });
-            await listarArquivosDoDiretorio(diretorio + '/' + listaDeArquivos[k], arquivos);
+            // await listarArquivosDoDiretorio(diretorio + '/' + listaDeArquivos[k], arquivos);
         }
         else {
             arquivos.push({ fileName: diretorio + '/' + listaDeArquivos[k], dir: false, info: await getFilesizeInBytes(diretorio + '/' + listaDeArquivos[k]) });
