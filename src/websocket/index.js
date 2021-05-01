@@ -30,15 +30,15 @@ exports.wbs = app => {
 
     app.wbskt.on('connection', (socket) => {
         conexoes.push(socket)
-            //quando receber a mensagem do socket
+        //quando receber a mensagem do socket
         socket.on('chatSend', message => {
-                console.log(message);
-                socket.emit('chatReceive', `EU: ${message}`)
-                conexoes.forEach(ele => {
-                    socket.to(ele.id).emit('chatReceive', `${socket.conn.remoteAddress} - ${message}`)
-                })
+            console.log(`${socket.conn.remoteAddress} - ${message}`);
+            socket.emit('chatReceive', `EU: ${message}`)
+            conexoes.forEach(ele => {
+                socket.to(ele.id).emit('chatReceive', `${socket.conn.remoteAddress} - ${message}`)
             })
-            //quando o socket desconectar
+        })
+        //quando o socket desconectar
         socket.on('disconnect', _ => {
             let index = conexoes.findIndex((ele) => {
                 return ele.id == socket.id
@@ -49,6 +49,7 @@ exports.wbs = app => {
 }
 
 exports.sendAll = (mensagem) => {
+    console.log(`Enviado para Todos ${JSON.stringify(mensagem)}`);
     conexoes.forEach(ele => {
         ele.emit('fileChange', mensagem)
     })
